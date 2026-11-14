@@ -1,10 +1,10 @@
 {
-  "name": "abyssal-garden-desktop",
-  "productName": "Abyssal Garden",
+  "name": "shark-escape-desktop",
+  "productName": "Shark Escape",
   "version": "1.0.0",
   "private": true,
-  "description": "Abyssal Garden as a desktop program: the single-file WebGPU scene in its own window",
-  "author": "Noniv",
+  "description": "Shark Escape as a desktop program: the single-file game in its own window",
+  "author": "CDM172",
   "license": "MIT",
   "main": "main.js",
   "scripts": {
@@ -17,13 +17,13 @@
     "electron-builder": "^26.18.0"
   },
   "build": {
-    "appId": "garden.abyssal.desktop",
-    "productName": "Abyssal Garden",
+    "appId": "game.sharkescape.desktop",
+    "productName": "Shark Escape",
     "files": ["main.js", "index.html", "icon.png"],
     "directories": { "output": "dist" },
     "compression": "maximum",
     "electronLanguages": ["en-US"],
     "win": { "icon": "icon.png" },
-    "portable": { "artifactName": "AbyssalGarden.exe" }
+    "portable": { "artifactName": "SharkEscape.exe" }
   }
 }

@@ -44,8 +44,8 @@ function sees(x, y, z) {
 }
 function gameOver(why) {
   play = 2; danger = 0;
-  const s = surv | 0; let best = 0; try { best = +localStorage.abyssalBest || 0; } catch {}
-  if (s > best) keep('abyssalBest', best = s);
+  const s = surv | 0; let best = 0; try { best = +localStorage.sharkBest || 0; } catch {}
+  if (s > best) keep('sharkBest', best = s);
   const tm = (v) => (v / 60 | 0) + ':' + String(v % 60).padStart(2, '0');
   E_MSG.textContent = `${why} You lasted ${tm(s)}. Best: ${tm(best)}.`;
   gEl('d').textContent = 'Dive again';

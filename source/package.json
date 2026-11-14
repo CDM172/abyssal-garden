@@ -1,7 +1,7 @@
 {
-  "name": "abyssal-garden",
+  "name": "shark-escape",
   "private": true,
-  "description": "A procedural underwater world rendered with WebGPU, bundled into one HTML file",
+  "description": "Shark Escape: a diving survival game in a procedural underwater world, rendered with WebGPU, bundled into one HTML file",
   "type": "module",
   "scripts": {
     "build": "node build.mjs",

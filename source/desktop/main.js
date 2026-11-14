@@ -13,7 +13,7 @@ const external = (url) => { if (/^https:\/\//.test(url)) shell.openExternal(url)
 app.whenReady().then(() => {
   Menu.setApplicationMenu(null);
   const win = new BrowserWindow({
-    width: 1600, height: 900, show: false, backgroundColor: '#000000', title: 'Abyssal Garden',
+    width: 1600, height: 900, show: false, backgroundColor: '#000000', title: 'Shark Escape',
     icon: path.join(__dirname, 'icon.png'),
     webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true },
   });
@@ -26,7 +26,7 @@ app.whenReady().then(() => {
     if (k.key === 'F11' || (k.alt && k.key === 'Enter')) { win.setFullScreen(!win.isFullScreen()); e.preventDefault(); }
     else if (k.control && k.key.toLowerCase() === 'q') app.quit();
   });
-  // the GitHub / Ko-fi links open in the normal browser, never inside the game window
+  // links open in the normal browser, never inside the game window
   win.webContents.setWindowOpenHandler(({ url }) => { external(url); return { action: 'deny' }; });
   win.webContents.on('will-navigate', (e, url) => { if (!url.startsWith('file:')) { e.preventDefault(); external(url); } });
 
