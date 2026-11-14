@@ -15,6 +15,24 @@ And all of it is made by code: no images, no 3D models, no sound files. The whol
 
 Nothing to install, and it works offline. It needs a browser with **WebGPU**. If you see *"This scene needs WebGPU"*, update your browser or switch to Chrome / Edge.
 
+## Play it as a program (Windows)
+
+[`AbyssalGarden.exe`](AbyssalGarden.exe) is the same world as a normal desktop program: double-click it and it opens in its own window. No browser and no installing needed.
+
+- The first start takes a few seconds while it unpacks itself.
+- Windows may show a blue *"Windows protected your PC"* box because the program is not signed. Click **More info**, then **Run anyway**.
+- `F11` (or `Alt` + `Enter`) switches fullscreen on and off. `Ctrl` + `Q` or closing the window quits.
+
+The code of the program's window is in [`source/desktop`](source/desktop). To rebuild the `.exe` (Node.js 18 or newer, works on Windows, macOS and Linux):
+
+```bash
+cd source/desktop
+npm install
+npm run build
+```
+
+The new file is written to `source/desktop/dist/AbyssalGarden.exe`. `npm start` runs the program without packaging it.
+
 ## What's down there
 
 - **Kelp forests** that sway in the current and sparkle with tiny gold and green specks
@@ -93,6 +111,7 @@ This writes a new `index.html` next to this README. `npm run build:readable` wri
 | [`source/src/math.js`](source/src/math.js) | Noise, random numbers and mesh-building helpers |
 | [`source/src/dev.js`](source/src/dev.js) | Development tools (fly-through and benchmark), only in `dev.html` |
 | [`source/template.html`](source/template.html) | The page around the scene: loading bar, start menu, links and their styles |
+| [`source/desktop`](source/desktop) | The desktop program: a small Electron window around `index.html`, and the settings that package it into `AbyssalGarden.exe` |
 
 Some easy first tweaks:
 

@@ -1,0 +1,29 @@
+{
+  "name": "abyssal-garden-desktop",
+  "productName": "Abyssal Garden",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Abyssal Garden as a desktop program: the single-file WebGPU scene in its own window",
+  "author": "Noniv",
+  "license": "MIT",
+  "main": "main.js",
+  "scripts": {
+    "copy": "node -e \"require('fs').copyFileSync('../../index.html','index.html')\"",
+    "start": "npm run copy && electron .",
+    "build": "npm run copy && electron-builder --win portable --x64"
+  },
+  "devDependencies": {
+    "electron": "^45.3.2",
+    "electron-builder": "^26.18.0"
+  },
+  "build": {
+    "appId": "garden.abyssal.desktop",
+    "productName": "Abyssal Garden",
+    "files": ["main.js", "index.html", "icon.png"],
+    "directories": { "output": "dist" },
+    "compression": "maximum",
+    "electronLanguages": ["en-US"],
+    "win": { "icon": "icon.png" },
+    "portable": { "artifactName": "AbyssalGarden.exe" }
+  }
+}
