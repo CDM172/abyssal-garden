@@ -24,7 +24,7 @@ function gameReset() {
   air = 100; hp = 100; surv = 0; danger = 0; hurtT = 0;
   for (let i = 0; i < NSH; i++) {
     const o = i * 16;
-    for (let k = 0; k < 40; k++) { sharkGoal(o); if (hypot(SHK[o + 8] - F[CX], SHK[o + 10] - F[CZ]) > 75) break; }
+    for (let k = 0; k < 40; k++) { sharkGoal(o); if (hypot(SHK[o + 8] - F[CX], SHK[o + 10] - F[CZ]) > 95) break; }
     SHK[o] = SHK[o + 8]; SHK[o + 1] = SHK[o + 9]; SHK[o + 2] = SHK[o + 10];
     SHK[o + 3] = rnd() * TAU; SHK[o + 4] = 0; SHK[o + 5] = 3; SHK[o + 6] = PATROL; SHK[o + 11] = rnd() * TAU; SHK[o + 12] = 0;
     SHK[o + 13] = 4 + i * 0.4; SHK[o + 14] = 0; SHK[o + 15] = 0;
@@ -58,14 +58,15 @@ function gameStep(dt, sprint) {
   if (sdAt(px + 2.6, py, pz) > -0.5) cov++; if (sdAt(px - 2.6, py, pz) > -0.5) cov++; if (sdAt(px, py + 2.6, pz) > -0.5) cov++;
   if (sdAt(px, py - 2.6, pz) > -0.5) cov++; if (sdAt(px, py, pz + 2.6) > -0.5) cov++; if (sdAt(px, py, pz - 2.6) > -0.5) cov++;
   hidden = cov > 2;
-  const up = py > -1.9, range = hidden ? 13 : sprint ? 55 : 40;
+  const up = py > -1.9, range = hidden ? 11 : sprint ? 50 : 34;
   losT += dt; let check = -1; if (losT > 0.06) { losT = 0; check = losI; losI = (losI + 1) % NSH; }
   let dg = 0, hunt = 0, nearD = 1e9;
   for (let i = 0; i < NSH; i++) {
     const o = i * 16; let x = SHK[o], y = SHK[o + 1], z = SHK[o + 2], st = SHK[o + 6];
     const ex = px - x, ey = py - y, ez = pz - z, dist = sqrt(ex * ex + ey * ey + ez * ez);
     if (dist < nearD) nearD = dist;
-    if (i === check) SHK[o + 15] = live && dist < range && sees(x, y, z) ? 1 : 0;
+    // it notices you ahead of it or to the side (or right next to it), not behind its tail
+    if (i === check) SHK[o + 15] = live && dist < range && (dist < 9 || (ex * sin(SHK[o + 3]) - ez * cos(SHK[o + 3])) > dist * -0.15) && sees(x, y, z) ? 1 : 0;
     const see = live && SHK[o + 15] > 0;
     SHK[o + 7] -= dt; SHK[o + 12] -= dt;
     if (see && st !== LEAVE) { st = CHASE; SHK[o + 14] = 2.5; }
@@ -74,7 +75,7 @@ function gameStep(dt, sprint) {
       if (!see && (SHK[o + 14] -= dt) < -6) { st = SEARCH; SHK[o + 7] = 12; }
       if (!live) st = PATROL;
       else if (dist < 2.3 && SHK[o + 12] < 0) { // bite, then swim off and come round again
-        hp -= 34; hurtT = 1; if (thump) thump(); st = LEAVE; SHK[o + 7] = 4.5; SHK[o + 12] = 6;
+        hp -= 25; hurtT = 1; if (thump) thump(); st = LEAVE; SHK[o + 7] = 4.5; SHK[o + 12] = 6;
         SHK[o + 8] = x - ex * 14 + rr(-8, 8); SHK[o + 9] = clamp(y + rr(2, 10), -48, -6); SHK[o + 10] = z - ez * 14 + rr(-8, 8);
       }
     } else if (st === SEARCH) {
