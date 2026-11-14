@@ -2,7 +2,7 @@
 //   npm run build            minified
 //   npm run build:readable   unminified, for debugging
 //   npm run build:dev        ../dev.html: unminified, plus the development tools in src/dev.js
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -15,6 +15,10 @@ const out = dev ? 'dev.html' : 'index.html';
 if (dev) FILES.push('dev.js');
 
 let js = FILES.map((f) => readFileSync(path.join(here, 'src', f), 'utf8')).join('\n');
+// the recorded sounds (sounds/*.mp3, see sounds/CREDITS.md) travel inside the page as base64 text
+const snd = {};
+for (const f of readdirSync(path.join(here, 'sounds'))) if (f.endsWith('.mp3')) snd[f.slice(0, -4)] = readFileSync(path.join(here, 'sounds', f)).toString('base64');
+js = `const SND = ${JSON.stringify(snd)};\n` + js;
 const tpl = readFileSync(path.join(here, 'template.html'), 'utf8');
 // everything runs inside one async function; startup errors are shown on screen
 const wrap = (body) => `(async()=>{${body}\n})().catch(e=>{console.error(e);document.body.className='l e';document.getElementById('s').textContent=(e.cause?'':'Failed to start: ')+e.message});`;

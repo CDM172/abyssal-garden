@@ -11,7 +11,7 @@ const SHK = new Float32Array(NSH * 16), SHI = new Float32Array(NSH * 8);
 const PATROL = 0, CHASE = 1, SEARCH = 2, LEAVE = 3;
 const AIRT = 80; // seconds of air at rest
 // play: 0 before the first dive, 1 diving, 2 dead
-let play = 0, air = 100, hp = 100, surv = 0, danger = 0, hidden = false, hurtT = 0, gHud = 0, losI = 0, losT = 0, GX = 0, GY = 0, GZ = 0, thump = null;
+let play = 0, air = 100, hp = 100, surv = 0, danger = 0, hidden = false, hurtT = 0, gHud = 0, gUp = false, gRun = false, losI = 0, losT = 0, GX = 0, GY = 0, GZ = 0, thump = null;
 const gEl = (id) => document.getElementById(id);
 const E_AIR = gEl('ga'), E_HP = gEl('gh'), E_ST = gEl('gs'), E_RED = gEl('gr'), E_MSG = gEl('x'), E_T = gEl('gt');
 
@@ -58,7 +58,8 @@ function gameStep(dt, sprint) {
   if (sdAt(px + 2.6, py, pz) > -0.5) cov++; if (sdAt(px - 2.6, py, pz) > -0.5) cov++; if (sdAt(px, py + 2.6, pz) > -0.5) cov++;
   if (sdAt(px, py - 2.6, pz) > -0.5) cov++; if (sdAt(px, py, pz + 2.6) > -0.5) cov++; if (sdAt(px, py, pz - 2.6) > -0.5) cov++;
   hidden = cov > 2;
-  const up = py > -1.9, range = hidden ? 11 : sprint ? 50 : 34;
+  const up = gUp = py > -1.9; gRun = !!sprint;
+  const range = hidden ? 11 : sprint ? 50 : 34;
   losT += dt; let check = -1; if (losT > 0.06) { losT = 0; check = losI; losI = (losI + 1) % NSH; }
   let dg = 0, hunt = 0, nearD = 1e9;
   for (let i = 0; i < NSH; i++) {
