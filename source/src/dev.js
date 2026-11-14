@@ -34,6 +34,8 @@
         // a benchmark hides the stats line and holds the resolution: dynT at -Infinity keeps frame() from tuning it
         if (bench) { hud = false; info.textContent = ''; dynT = -Infinity; }
       }
-    } else if (/Digit[1-6]/.test(e.code)) stop();
+    } else if (/Digit[1-6]/.test(e.code)) { stop(); lookAt(...POSES[e.code.charCodeAt(5) - 49]); }
   });
+  // automated tests reach the scene's state through this
+  window.T = (code) => eval(code);
 }

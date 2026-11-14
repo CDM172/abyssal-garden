@@ -39,6 +39,12 @@ function mkSound(ac) {
     f.setValueAtTime(f0, t); f.exponentialRampToValueAtTime(f1, t + dur);
     g.setValueAtTime(0, t); g.linearRampToValueAtTime(vol, t + att); g.setTargetAtTime(0, t + att, (dur - att) / 5);
   };
+  // danger: a low two-note pulse that comes up as a shark closes in and races while one hunts you
+  const dng = G(0, out), dp = G(0.5, dng), dl = N(OscillatorNode, { frequency: 1.1 }, G(0.5, dp.gain));
+  N(OscillatorNode, { frequency: 41.2, type: 'sawtooth' }, BQ('lowpass', 150, 2, dp)); N(OscillatorNode, { frequency: 43.65, type: 'sawtooth' }, BQ('lowpass', 120, 2, dp));
+  // bite: a thud of filtered noise
+  const hit = G(0, out); src(0.4, BQ('lowpass', 260, 1.2, hit));
+  thump = () => { const t = ac.currentTime; hit.gain.setValueAtTime(0, t); hit.gain.linearRampToValueAtTime(2.2, t + 0.02); hit.gain.setTargetAtTime(0, t + 0.05, 0.16); };
   const NOTES = [0, 2, 5, 7, 9, 12, 14, 17, 19]; // D major pentatonic, in semitones above A4
   let lt = ac.currentTime, tB = lt + 1.5, tC = lt + 5, tW = lt + 12, lx = F[CX], ly = F[CY], lz = F[CZ];
   out.gain.setTargetAtTime(VOL, lt, 1);
@@ -48,6 +54,7 @@ function mkSound(ac) {
     let v = hypot(F[CX] - lx, F[CY] - ly, F[CZ] - lz) / dt; if (v > 60) v = 0; // ignore jumps to a viewpoint
     lt = now; lx = F[CX]; ly = F[CY]; lz = F[CZ];
     rush.gain.setTargetAtTime(0.5 * pow(min(v / 26, 1), 1.2), t, 0.3); rushF.frequency.setTargetAtTime(220 + v * 14, t, 0.3);
+    dng.gain.setTargetAtTime(0.5 * danger * danger, t, 0.4); dl.frequency.setTargetAtTime(1 + 1.6 * danger, t, 0.5);
     const s = clamp(1 + ly / 30, 0, 1); wash.gain.setTargetAtTime(0.25 + 0.55 * s * s, t, 0.5);
     if (t > tB) { // a burst of 1-6 bubbles: short rising blips, smaller bubbles higher and shorter
       let tt = t;

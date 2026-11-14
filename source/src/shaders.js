@@ -576,6 +576,44 @@ struct VO { @builtin(position) cp: vec4f, @location(0) wp: vec3f, @location(1) n
   c += alb * sky * ca * .45 * (1. - top) + sky * pow(1. - ndv, 3.) * .35;
   return fin(fog(c, i.wp, z));
 }
+// sharks: a = position + length, b = yaw, pitch, swim phase, turn rate
+@vertex fn vsShark(i: VI) -> VO {
+  var o: VO;
+  let cp = cos(i.b.y);
+  let T = vec3f(sin(i.b.x) * cp, sin(i.b.y), -cos(i.b.x) * cp);
+  let S = normalize(cross(vec3f(0., 1., 0.), T)); let Up = cross(T, S);
+  var l = i.p;
+  // the body bends into a turn and the tail half sweeps from side to side
+  let k = sat(.32 - l.z);
+  l.x += sin(i.b.z + l.z * 5.) * .34 * k * k + clamp(i.b.w, -1.5, 1.5) * .1 * (l.z * l.z - .06);
+  let w = i.a.xyz + (S * l.x + Up * l.y + T * l.z) * i.a.w;
+  o.cp = g.vp * vec4f(w, 1.); o.wp = w; o.n = S * i.n.x + Up * i.n.y + T * i.n.z; o.op = i.p; o.sd = i.n.w;
+  o.lt = shadow1(w);
+  return o;
+}
+@fragment fn fsShark(i: VO, @builtin(front_facing) ff: bool) -> @location(0) vec4f {
+  let dist = length(i.wp - g.cam.xyz);
+  let ca = caus(i.wp, dist);
+  let tx = textureSample(tD, sR, i.op.zy * 2.3);
+  var n = normalize(i.n); if (!ff) { n = -n; }
+  let L = g.sun.xyz; let V = normalize(g.cam.xyz - i.wp);
+  let z = zone(i.wp); let vv = vol(i.wp);
+  // grey back, pale belly, with a ragged line between them along the flank
+  let bel = ss(.012, -.03, i.op.y + (tx.a - .5) * .03 + .035 * ss(.1, .5, i.op.z));
+  var alb = mix(vec3f(.115, .15, .19) * (.75 + .5 * tx.b), vec3f(.62, .66, .68), bel);
+  let az = abs(i.op.x);
+  // gill slits, eye and the dark mouth line
+  let gill = ss(.5, 1., sin(i.op.z * 150.)) * ss(.25, .2, i.op.z) * ss(.15, .19, i.op.z) * ss(.05, .0, abs(i.op.y)) * ss(.04, .07, az);
+  let eye = ss(.016, .009, length(vec2f(i.op.z - .405, i.op.y - .012)));
+  let mouth = ss(.012, .004, abs(i.op.y + .028 + (i.op.z - .36) * .25)) * ss(.3, .34, i.op.z) * ss(.45, .42, i.op.z);
+  alb *= 1. - .7 * gill; alb = mix(alb, vec3f(.01), max(eye, mouth * .85));
+  let E = sunE(i.wp.y, z) * i.lt;
+  let fillN = vec3f(n.x, abs(n.y) * .5 + .3, n.z);
+  var c = alb * (E * sat(dot(n, L)) * (.35 + ca) + amb(i.wp, fillN, vv.g, z) * 1.15 + side(i.wp, n, 1., z) * .7);
+  c += E * pow(sat(dot(n, normalize(V + L))), 40.) * .35 * (.3 + ca) * (1. - eye);
+  c += amb(i.wp, vec3f(0., 1., 0.), vv.g, z) * pow(1. - sat(dot(n, V)), 3.) * .3;
+  return fin(fog(c, i.wp, z));
+}
 `;
 
 // ---------------------------------------------------------------- water surface seen from below
